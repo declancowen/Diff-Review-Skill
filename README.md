@@ -20,6 +20,13 @@ This repository contains three skills as sibling directories:
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
 - Includes the skill definition and agent config.
 
+## How They Work Together
+
+- `diff-review` and `repo-audit` are the investigation skills. They focus on finding bugs, risks, regressions, and weak design decisions in real code.
+- `architecture-standards` is the design and boundary guide. It helps shape remediation, evaluate architectural quality, and keep fixes proportionate to the actual problem.
+- If `architecture-standards` is installed alongside the review skills, it can be used to strengthen investigation quality, architectural reasoning, and fix recommendations.
+- `diff-review` and `repo-audit` still work independently if `architecture-standards` is not installed.
+
 ## Layout
 
 ```text
