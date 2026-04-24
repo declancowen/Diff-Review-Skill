@@ -1,16 +1,10 @@
-# Codex Review And Architecture Skills
+# Review And Architecture Skills
 
-This repository now packages three Codex skills as sibling directories:
+This repository contains three skills as sibling directories:
 
 - `diff-review`
 - `repo-audit`
 - `architecture-standards`
-
-Each directory mirrors the current local Codex skill source in `~/.codex/skills`:
-
-- `diff-review/` mirrors `~/.codex/skills/diff-review/`
-- `repo-audit/` mirrors `~/.codex/skills/repo-audit/`
-- `architecture-standards/` mirrors `~/.codex/skills/architecture-standards/`
 
 ## Contents
 
@@ -43,7 +37,3 @@ Each directory mirrors the current local Codex skill source in `~/.codex/skills`
 │   └── references/
 └── README.md
 ```
-
-## Updating
-
-To refresh this repository from the local Codex skill sources, replace the corresponding skill directories from `~/.codex/skills`.
