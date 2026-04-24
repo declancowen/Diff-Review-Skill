@@ -1,0 +1,7 @@
+interface:
+  display_name: "Architecture Standards"
+  short_description: "Enterprise architecture guardrails"
+  default_prompt: "Use $architecture-standards to design or scaffold a clean, scalable architecture with strong boundaries and practical tradeoffs."
+
+policy:
+  allow_implicit_invocation: true

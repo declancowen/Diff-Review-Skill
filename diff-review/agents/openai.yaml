@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diff Review"
+  short_description: "Review local diffs before pushing"
+  default_prompt: "Use $diff-review to review my current git diff for bugs, regressions, and open issues before I push."

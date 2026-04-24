@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Audit"
+  short_description: "Audit a full codebase end to end"
+  default_prompt: "Use $repo-audit to assess this repository for bugs, tech debt, security, architecture, and refactoring opportunities."
