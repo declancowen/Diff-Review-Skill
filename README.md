@@ -32,13 +32,16 @@ This repository contains three skills as sibling directories:
 ```text
 .
 ├── architecture-standards/
+│   ├── README.md
 │   ├── SKILL.md
 │   └── agents/openai.yaml
 ├── diff-review/
+│   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   └── references/
 ├── repo-audit/
+│   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   └── references/
