@@ -10,4 +10,5 @@ Works well with `architecture-standards` when you want stronger architectural re
 
 - `SKILL.md` contains the full skill instructions and trigger rules.
 - `agents/openai.yaml` defines the agent configuration for the skill.
-- `references/` contains stack-specific review guidance used during investigation.
+- `references/` contains stack-specific review guidance plus calibration, severity, and review-process references used during investigation.
+- `scripts/review-preflight.sh` collects branch and review context before a medium/high-risk review.

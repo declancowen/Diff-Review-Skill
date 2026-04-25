@@ -10,7 +10,7 @@ This repository contains three skills as sibling directories:
 
 `diff-review`
 - Reviews local git diffs for bugs, security issues, and code quality before pushing.
-- Includes stack-specific review references plus the skill agent config.
+- Includes the skill definition, agent config, review references, and helper scripts.
 
 `repo-audit`
 - Runs full repository audits across correctness, security, architecture, performance, and maintainability.
@@ -39,7 +39,8 @@ This repository contains three skills as sibling directories:
 │   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
-│   └── references/
+│   ├── references/
+│   └── scripts/
 ├── repo-audit/
 │   ├── README.md
 │   ├── SKILL.md

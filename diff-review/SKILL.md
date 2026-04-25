@@ -55,6 +55,8 @@ Do not give an "all clear" unless all of the following are true:
 - No open Critical or High findings remain.
 - Any remaining uncertainty is minor enough that shipping is still a defensible decision.
 
+For `Medium` risk or above, read `references/all-clear-antipatterns.md` before final all-clear and explicitly avoid the relevant anti-patterns in the turn notes.
+
 If those conditions are not met, the correct outcome is not "all clear". It is "partial review", "open findings remain", or "needs follow-up verification".
 
 ## High-risk all-clear proof burden
@@ -81,6 +83,38 @@ Before concluding the review, actively look for what reviewers commonly miss:
 - **Pattern siblings:** when you find one bug pattern, stop and build a sibling matrix. Search for the same pattern across lifecycle variants, layers, parallel entities, alternate consumers, and non-primary callers. Do not assume a single occurrence unless the search proves it.
 - **Refactor debris:** stale names, half-moved files, dead code, duplicate paths, partial reverts, and generated artifacts that no longer match the source.
 - **False confidence:** passing tests do not overrule contradictory code evidence, and broad CI green does not prove a risky path is safe if coverage is weak.
+
+## Invariant-first review gate
+
+Do not review meaningful behavior changes only as code hunks. Convert each changed behavior into invariants, then try to break those invariants against representative states.
+
+When external review findings, escaped bugs, repeated false all-clears, or high-risk branch loops are present, load `references/bug-class-taxonomy.md` and classify the findings or risks into bug classes before concluding the turn. Use `references/escaped-review-benchmarks.md` for calibration when the branch resembles a prior missed-review pattern.
+
+For every shared UI, contract, persistence, optimistic-state, batch-operation, or fallback-path change, identify:
+
+- **Authority:** which layer owns IDs, defaults, validation, permissions, timestamps, and persisted values; reject changes that let less-trusted layers override authoritative layers without an explicit guard.
+- **Preservation:** which fields, relationships, filters, parent links, sort keys, or existing values must remain unchanged when the user performs the action.
+- **State variants:** empty vs filled, valid vs legacy-invalid, editable vs read-only, parent vs child, grouped vs ungrouped, default vs filtered, current user vs other user, and duplicate display-label cases.
+- **Interaction variants:** mouse, keyboard shortcut, disabled button, context menu, nested menu, inline editor, modal, confirmation dialog, and autosave/explicit-save variants.
+- **Lifecycle:** whether the component that starts an async action, confirmation, or dialog can unmount before the follow-up UI appears or before the mutation completes.
+- **Identity:** whether keys, registration IDs, cache keys, unique lookups, and reverse lookups are truly unique under duplicate render surfaces, duplicated labels, multiple tenants/teams, or repeated entity names.
+- **Atomicity:** for batch or fan-out operations, what happens if one item fails after others succeed; whether read models, caches, optimistic state, and error responses remain coherent.
+
+For `Medium` risk or above, record the main invariants checked in the review turn. For `High`/`Critical` risk, an all-clear is not allowed unless the weakest invariant has been attacked directly with code reading, a targeted test, or a concrete reason it cannot fail.
+
+## Variant matrix discipline
+
+When a shared component, selector, helper, dialog, menu, or store action changes behavior, build a small variant matrix before clearing it.
+
+Minimum useful axes:
+
+- **Value state:** empty, populated, invalid legacy value, and explicit `null`/`undefined` when both are meaningful.
+- **Mode state:** editable, read-only, inline, detail view, surface/list/card view, create mode, rename/update mode.
+- **Scope state:** tenant/workspace/team/project, no scope, duplicate labels in different scopes, and stale or retained scope.
+- **Flow state:** click, keyboard submit, programmatic submit, optimistic submit, server failure, retry, and reconciliation.
+- **Container state:** normal mounted component, transient menu/popover, nested dialog, route transition, fallback/skeleton, retained data.
+
+The matrix does not need to be large or formal. It must be explicit enough that a reviewer cannot accidentally only check the happy path.
 
 ## Risk escalation
 
@@ -327,6 +361,12 @@ When findings come from outside the current review pass, classify each one again
 
 Only after this triage should remediation or re-review planning begin. Do not assume externally supplied findings are still open just because they were once valid.
 
+When multiple external findings are supplied, load `references/external-finding-import.md` and normalize them into an import table before fixing or clearing them.
+
+Also classify every external finding by bug class using `references/bug-class-taxonomy.md`. If the finding is live, already fixed, or stale, the classification still matters because it reveals what the prior review failed to prove. If no taxonomy class fits, record a candidate class in the review turn instead of inventing a one-off checklist item.
+
+For any external finding that was missed after a prior all-clear or partial-clear, load `references/miss-retrospective-template.md` and write a concise retrospective entry in the review file. The retrospective must name the missed signal, the missing variant or invariant, and the future proof obligation.
+
 ## Common miss archetypes
 
 Expand the review automatically when the diff touches one of these recurring miss patterns:
@@ -446,6 +486,7 @@ Say when this elevated suspicion is in effect, and bias the challenger pass towa
 
 Use the `architecture-standards` skill selectively, not by default.
 
+- When unsure whether a finding needs architecture guidance, load `references/architecture-review-bridge.md` first. It defines the boundary, ownership, and shared-contract triggers for invoking `architecture-standards`.
 - When fixing issues raised by this review, use the `architecture-standards` skill if the remediation needs to align with the existing architecture shape, boundary rules, dependency direction, layering, module ownership, or long-lived design decisions.
 - Use it when the codebase already has a reasonably coherent architecture and the review depends on boundaries, ownership, dependency direction, layering, or long-lived design choices.
 - Use it when the correct fix needs to align with an existing architectural pattern and the skill will help validate that alignment.
@@ -513,6 +554,12 @@ All requested hardening additions are implemented, but overlapping asks are inte
 - **Test adequacy check** — see `Step 3c. Run relevant verification`
 - **Review graph step** — see `Step 3a1. Build a review graph for shared or risky surfaces`
 - **Base-rate suspicion rule** — see `Base-rate suspicion rule`
+- **Invariant and variant proof gates** — see `Invariant-first review gate`, `Variant matrix discipline`, and `references/bug-class-taxonomy.md`
+- **External finding import** — see `Live-first triage for pasted findings` and `references/external-finding-import.md`
+- **All-clear anti-patterns** — see `All-clear bar` and `references/all-clear-antipatterns.md`
+- **Severity calibration** — see `Severity` and `references/severity-calibration.md`
+- **Architecture bridge** — see `Architecture standards usage` and `references/architecture-review-bridge.md`
+- **Evidence-backed miss learning** — see `Escaped bug feedback loop`, `references/miss-retrospective-template.md`, `references/escaped-review-benchmarks.md`, and `references/benchmark-scoring.md`
 
 ## Workflow
 
@@ -534,6 +581,22 @@ The review file is a working document that stays uncommitted throughout the revi
 ---
 
 ## Step 1: Initialise
+
+### 1a0. Run review preflight when useful
+
+For medium/high-risk reviews, long-running review loops, pasted external findings, or when context may be fragmented, start by running the bundled preflight script from the repository root. Resolve `scripts/review-preflight.sh` relative to this skill directory.
+
+```bash
+~/.codex/skills/diff-review/scripts/review-preflight.sh
+```
+
+Optionally pass the base ref:
+
+```bash
+~/.codex/skills/diff-review/scripts/review-preflight.sh origin/main
+```
+
+Use the output to seed the review file's branch, PR, changed-file, hotspot, and verification context. The script is a context collector, not a substitute for reading code.
 
 ### 1a. Set up `.reviews/` directory
 
@@ -971,6 +1034,7 @@ Before you say "no findings", "looks good", or "all clear", challenge your own r
 #### Turn-end blocker questions
 
 - What is the most likely serious issue this review could still be missing?
+- Which bug class from the taxonomy is most represented by this branch, and what direct evidence proves it is closed?
 - Which assumption matters most, and what would break if it is false?
 - Which high-risk path has the weakest direct evidence?
 - Which sibling surface or parallel implementation is most likely to still carry the same bug family?
@@ -980,6 +1044,7 @@ Before you say "no findings", "looks good", or "all clear", challenge your own r
 - What entity twin was not checked deeply enough?
 - What non-primary caller or bypass path was least directly evidenced?
 - What changed test, removed guard, or untouched dependency did you trust, and why?
+- Which state variant was least directly checked: empty, legacy-invalid, scoped duplicate, transient container, or partial failure?
 - If this shipped and caused a production incident tomorrow, what path would you investigate first?
 
 #### Must challenge one more
@@ -1118,6 +1183,8 @@ These IDs persist across turns. `B1-01` is always `B1-01`, even when resolved in
 ### Severity
 
 Every finding gets a severity rating regardless of type. A Bug can be Low (cosmetic). An Observation can be High (architectural debt compounding fast). A Flag can be Critical (potential auth bypass needing immediate confirmation).
+
+For ambiguous severity, hidden broken flows, data integrity issues, compatibility breaks, partial-success behavior, or external findings that seem under-ranked, load `references/severity-calibration.md` before assigning severity.
 
 - **Critical** — Must fix. Active bugs, security holes, data loss risk.
 - **High** — Should fix soon. Problems that compound over time.
@@ -1264,6 +1331,7 @@ Files and areas reviewed across all turns:
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {Key files, flows, consumers, tests, artifacts, and pattern searches reviewed}
 **Finding triage:** {Prior findings or external findings classified as live | already fixed | accepted | stale | needs confirmation before remediation}
+**Bug classes / invariants checked:** {Taxonomy classes and concrete invariants or state variants checked this turn}
 **Branch totality:** {What was rechecked across the whole branch/current tree beyond the current turn delta}
 **Sibling closure:** {Which lifecycle/layer/entity/consumer/caller siblings were checked for repeated bug classes}
 **Remediation impact surface:** {Which adjacent callers, consumers, dependencies, workflows, contracts, and side-effect surfaces were revalidated because of the fix}
@@ -1374,6 +1442,7 @@ Files and areas reviewed across all turns:
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {Key files, flows, consumers, tests, artifacts, and pattern searches reviewed}
 **Finding triage:** {Externally supplied or inherited findings classified as live | already fixed | accepted | stale | needs confirmation}
+**Bug classes / invariants checked:** {Taxonomy classes and concrete invariants or state variants checked this turn}
 **Branch totality:** {What was checked across the full branch/current tree, not just the initial diff summary}
 **Sibling closure:** {Which lifecycle/layer/entity/consumer/caller sibling surfaces were checked for repeated bug classes}
 **Remediation impact surface:** {Which adjacent callers, consumers, dependencies, workflows, contracts, and side-effect surfaces were checked}
@@ -1536,6 +1605,8 @@ Use these as style guides. They are intentionally short, but they show the level
 - **Every turn states confidence honestly.** Confidence should reflect actual review depth and runtime verification, not optimism.
 - **Every turn states coverage explicitly.** If there are no findings, the coverage note must explain why that result is credible.
 - **Every turn states finding triage explicitly when prior findings or external review comments exist.** Confirm what is still live in the current tree before treating a pasted or inherited finding as an open problem.
+- **External findings get bug-class classification.** Use the taxonomy to explain what review lens missed them, even when the finding is stale or intentional in the current tree.
+- **Escaped misses get a retrospective.** Use the retrospective template for any GitHub/Devin/CI/user finding that arrived after a prior review pass should reasonably have caught it.
 - **Every turn states branch totality explicitly.** Turn 2+ must say what was reassessed across the whole branch/current tree beyond the latest edit set.
 - **Turn 2+ proves branch totality concretely.** Generic claims like "rechecked the branch" are not enough; the turn must name non-delta rechecks, prior finding rechecks, adjacent/resolved area revalidation, and hotspot revisits.
 - **Every turn states sibling closure explicitly.** If a repeated bug class was in play, the review must say which sibling surfaces were checked or why closure is incomplete.
@@ -1567,7 +1638,7 @@ When the user asks to re-review after making fixes:
 2. **Get both the current-turn diff and the cumulative branch diff** (always excluding `.reviews/`). The current diff shows what changed this pass; the branch diff shows what the branch now contains in total.
 3. **Update the cumulative scope and hotspot ledger** in the header — add any new files that appear in this turn's diff or in newly relevant sibling surfaces, and update recurring risk families as needed
 4. **Choose the turn's change archetype tags** based on the current-turn delta plus current branch state. Use these tags to decide which checklists and hotspot rechecks are mandatory
-5. **Triage prior findings and any externally supplied review comments against the current tree** — classify each one as live, already fixed, accepted, stale, needs confirmation, or superseded before planning remediation work
+5. **Triage prior findings and any externally supplied review comments against the current tree** — classify each one as live, already fixed, accepted, stale, needs confirmation, or superseded before planning remediation work. For multiple external findings, load `references/external-finding-import.md`. For external findings or missed prior review issues, load `references/bug-class-taxonomy.md`, assign bug classes, and use `references/miss-retrospective-template.md` when the miss exposes a review-process gap
 6. **Re-read the codebase context** for all files in the current diff, plus files referenced in prior open findings, prior resolved findings with similar bug families, required sibling surfaces from the bug-family matrix, any shared abstractions or family members implicated by the remediation options, and the adjacent callers/consumers/dependencies in the remediation impact surface
 7. **For each prior open finding, check the current code:**
    - **Resolved**: The code that caused the finding has been fixed. The fix addresses the root cause, not just the symptom, and does not introduce an obvious new issue in adjacent flows. Write a resolution note.
@@ -1581,8 +1652,8 @@ When the user asks to re-review after making fixes:
 11. **Analyse both the current diff and the branch-total current state for new findings** — fixes can introduce new bugs, untouched branch areas can still block readiness, and a locally sensible remediation can still be wrong if it conflicts with the broader bug family
 12. **If remediation or revalidation reveals a new adjacent issue, document it immediately as a new finding** — assign a new ID, record the discovery source (for example `remediation pass for B1-01`), link it to the triggering finding, and update the resolved finding note if relevant so the review history stays traceable
 13. **On long-running reviews, trigger a branch-risk recertification turn when appropriate** — every 5 turns or after a major fix cluster, answer: what remains highest risk now, what bug family is most likely still under-reviewed, what previously fixed area should be rechecked, and what has not been re-verified recently enough
-14. **Append the new turn to the review file** and update the header status counts. Record concrete branch-totality proof, remediation radius decisions, any deferred adjacent improvements, remediation-discovered findings, and the prevention artifact used or consciously skipped.
-15. **If all findings are resolved and no new issues found in the current branch state:** only then write a final turn confirming the review is clean. Update the header to show 0 open findings. Tell the user: all clear to submit. The code is ready to commit and push.
+14. **Append the new turn to the review file** and update the header status counts. Record concrete branch-totality proof, invariant/variant proof for the risky areas, bug-class classification for external or escaped findings, remediation radius decisions, any deferred adjacent improvements, remediation-discovered findings, and the prevention artifact used or consciously skipped.
+15. **If all findings are resolved and no new issues found in the current branch state:** check `references/all-clear-antipatterns.md`, then write a final turn confirming the review is clean only if the anti-pattern check does not expose weak proof. Update the header to show 0 open findings. Tell the user: all clear to submit. The code is ready to commit and push.
 16. **If investigation is incomplete or branch-totality proof is thin/generic:** do not give an all-clear. State that the review is partial, list the unreviewed files, sibling surfaces, hotspot families, impact paths, adjacent dependency surfaces, prevention gaps, or remediation-family coherence questions, and say what still needs checking.
 
 ---
@@ -1591,16 +1662,23 @@ When the user asks to re-review after making fixes:
 
 If the user later reports that review missed a bug, treat that as a process failure to learn from, not just a new isolated finding.
 
+Load `references/bug-class-taxonomy.md` and `references/miss-retrospective-template.md` before writing the follow-up review turn. If the miss resembles an existing calibration case, also load `references/escaped-review-benchmarks.md`.
+
 1. Reconstruct the escaped issue precisely: the failure mode, affected path, impact, and why it mattered.
-2. Identify the missed signal:
+2. Classify it by bug class:
+   - use an existing taxonomy class when possible
+   - if no class fits, record a candidate class in the review file rather than adding a narrow library-specific checklist
+3. Identify the missed signal:
    - Was the evidence in the diff but overlooked?
    - Was connected code not traced far enough?
    - Was the wrong test/check run?
    - Did a passing test create false confidence?
    - Was the issue a repeated pattern elsewhere?
-3. Add or recommend a regression check that would catch this class next time.
-4. Search the codebase for sibling occurrences of the same pattern.
-5. Update the active review with the escaped finding and explicitly note the review gap so future turns do not repeat it.
+   - Was the missing proof an invariant, a state variant, a lifecycle assumption, a scope boundary, or an authority boundary?
+4. Add or recommend a regression check that would catch this class next time.
+5. Search the codebase for sibling occurrences of the same pattern.
+6. Update the active review with the escaped finding and explicitly note the review gap so future turns do not repeat it.
+7. If the miss is broadly reusable, add it to `references/escaped-review-benchmarks.md` as a calibration case.
 
 The goal is not perfection theater. The goal is that every miss permanently improves the next review.
 
@@ -1624,13 +1702,15 @@ When revalidated, either keep it resolved with fresh evidence or reopen it in th
 To improve toward a 99% success rate, evaluate this skill against known past changes, not just live diffs.
 
 - Maintain a benchmark set of historical PRs/diffs with known outcomes: solid changes, missed bugs, regressions, security issues, migration problems, and false all-clears.
+- Store compact benchmark prompts and expected review lenses in `references/escaped-review-benchmarks.md`.
+- Score benchmark attempts with `references/benchmark-scoring.md` so skill changes are evaluated by missed issue classes, false all-clears, and proof quality.
 - Periodically run the review process against that benchmark set and score:
   - missed Critical/High issues
   - false all-clears
   - noisy low-value findings
   - verification compliance by risk level
   - whether sibling-pattern hunts and release-safety checks were performed when needed
-- Use escaped bugs and painful review misses to expand the benchmark set over time.
+- Use escaped bugs and painful review misses to expand the benchmark set over time, but prefer general bug classes over one-off framework details.
 - Prefer prompt/process changes that improve benchmark results over changes that merely sound stricter.
 
 The benchmark is the truth surface. Without it, "better" is mostly intuition.
