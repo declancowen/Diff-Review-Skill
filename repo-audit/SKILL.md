@@ -57,6 +57,8 @@ Do not give a "healthy / clean" conclusion unless all of the following are true:
 - No open Critical or High findings remain inside the audited scope.
 - Any remaining uncertainty is minor enough that calling the codebase healthy is still defensible.
 
+For `Medium` risk or above, read `references/all-clear-antipatterns.md` before a clean conclusion and explicitly avoid the relevant anti-patterns in the turn notes.
+
 If those conditions are not met, the correct outcome is not "clean". It is "partial audit", "open findings remain", or "needs follow-up verification".
 
 ## High-risk clean-bill proof burden
@@ -83,6 +85,38 @@ Before concluding the audit, actively look for what auditors commonly miss:
 - **Pattern siblings:** when you find one bug pattern, stop and build a sibling matrix. Search for the same pattern across lifecycle variants, layers, parallel entities, alternate consumers, and non-primary callers. Do not assume a single occurrence unless the search proves it.
 - **Refactor debris:** stale names, half-moved files, dead code, duplicate paths, partial reverts, generated artifacts that no longer match source, and Finder-style duplicate files.
 - **False confidence:** passing tests do not overrule contradictory code evidence, and broad CI green does not prove a risky area is safe if coverage is weak.
+
+## Invariant-first audit gate
+
+Do not audit meaningful behavior, contract, architecture, or operational risk only as files and categories. Convert each risky area into invariants, then try to break those invariants against representative states and bypass paths.
+
+When external findings, escaped bugs, repeated false clean conclusions, or high-risk audit loops are present, load `references/bug-class-taxonomy.md` and classify the findings or risks into bug classes before concluding the turn. Use `references/escaped-audit-benchmarks.md` for calibration when the repo resembles a prior missed-audit pattern.
+
+For every shared UI, contract, persistence, optimistic-state, batch-operation, fallback-path, background-job, or architecture-boundary concern, identify:
+
+- **Authority:** which layer owns IDs, defaults, validation, permissions, timestamps, retries, and persisted values; reject designs that let less-trusted layers override authoritative layers without an explicit guard.
+- **Preservation:** which fields, relationships, filters, parent links, sort keys, permissions, or existing values must remain unchanged when an action, job, migration, or import runs.
+- **State variants:** empty vs filled, valid vs legacy-invalid, editable vs read-only, parent vs child, grouped vs ungrouped, default vs filtered, current user vs other user, duplicate display-label cases, old client/job payloads, and fallback vs live data.
+- **Entrypoint variants:** UI button, keyboard shortcut, context menu, inline editor, modal, route/API, direct mutation, job, script, import, webhook, and migration variants.
+- **Lifecycle:** whether the component/process that starts an async action, confirmation, subscription, stream, job, or cleanup can disappear before completion.
+- **Identity:** whether keys, registration IDs, cache keys, unique lookups, and reverse lookups are truly unique under duplicate render surfaces, duplicated labels, multiple tenants/teams, imports, and migrations.
+- **Atomicity:** for batch, fan-out, job, migration, or multi-write operations, what happens if one item fails after others succeed; whether read models, caches, optimistic state, logs, and error responses remain coherent.
+
+For `Medium` risk or above, record the main invariants checked in the audit turn. For `High`/`Critical` risk, a clean conclusion is not allowed unless the weakest invariant has been attacked directly with code reading, targeted verification, or a concrete reason it cannot fail.
+
+## Variant matrix discipline
+
+When a shared component, selector, helper, dialog, route, store action, service, worker, job, schema, or architecture boundary is audited, build a small variant matrix before clearing it.
+
+Minimum useful axes:
+
+- **Value state:** empty, populated, invalid legacy value, and explicit `null`/`undefined` when both are meaningful.
+- **Mode state:** editable, read-only, inline, detail view, create mode, update mode, fallback mode, worker/job mode, migration/import mode.
+- **Scope state:** tenant/workspace/team/project/account, no scope, duplicate labels in different scopes, and stale or retained scope.
+- **Flow state:** click, keyboard submit, API submit, programmatic submit, optimistic submit, job retry, server failure, retry, and reconciliation.
+- **Runtime state:** normal mounted component/process, transient menu/popover, nested dialog, route transition, fallback/skeleton, retained data, stream/subscription restart, worker restart.
+
+The matrix does not need to be large or formal. It must be explicit enough that an auditor cannot accidentally only check the happy path.
 
 ## Risk escalation
 
@@ -332,6 +366,12 @@ When findings come from outside the current audit pass, classify each one agains
 
 Only after this triage should remediation or re-audit planning begin. Do not assume externally supplied findings are still open just because they were once valid.
 
+When multiple external findings are supplied, load `references/external-finding-import.md` and normalize them into an import table before fixing or clearing them.
+
+Also classify every external finding by bug class using `references/bug-class-taxonomy.md`. If the finding is live, already fixed, or stale, the classification still matters because it reveals what the prior audit failed to prove. If no taxonomy class fits, record a candidate class in the audit turn instead of inventing a one-off checklist item.
+
+For any external finding that was missed after a prior clean or partial-clean audit, load `references/miss-retrospective-template.md` and write a concise retrospective entry in the audit file. The retrospective must name the missed signal, the missing variant or invariant, and the future proof obligation.
+
 ## Common miss archetypes
 
 Expand the audit automatically when the repo state touches one of these recurring miss patterns:
@@ -466,6 +506,7 @@ Say when this elevated suspicion is in effect, and bias the challenger pass towa
 
 Use the `architecture-standards` skill selectively, not by default.
 
+- When unsure whether a finding needs architecture guidance, load `references/architecture-review-bridge.md` first. It defines the boundary, ownership, shared-contract, and operational triggers for invoking `architecture-standards`.
 - When fixing issues raised by this audit, use the `architecture-standards` skill if the remediation needs to align with the existing architecture shape, boundary rules, dependency direction, layering, module ownership, or long-lived design decisions.
 - Use it when the codebase already has a reasonably coherent architecture and the audit depends on boundaries, ownership, dependency direction, layering, or long-lived design choices.
 - Use it when the correct fix needs to align with an existing architectural pattern and the skill will help validate that alignment.
@@ -533,6 +574,12 @@ This skill inherits the same turn-based guardrail family as `diff-review`, but a
 - **Test adequacy check** — see `Step 3c. Run relevant verification`
 - **Audit graph step** — see `Step 3a1. Build an audit graph for shared or risky surfaces`
 - **Base-rate suspicion rule** — see `Base-rate suspicion rule`
+- **Invariant and variant proof gates** — see `Invariant-first audit gate`, `Variant matrix discipline`, and `references/bug-class-taxonomy.md`
+- **External finding import** — see `Live-first triage for pasted findings` and `references/external-finding-import.md`
+- **Clean-conclusion anti-patterns** — see `Clean-bill bar` and `references/all-clear-antipatterns.md`
+- **Severity calibration** — see `Severity` and `references/severity-calibration.md`
+- **Architecture bridge** — see `Architecture standards usage` and `references/architecture-review-bridge.md`
+- **Evidence-backed miss learning** — see `Escaped finding feedback loop`, `references/miss-retrospective-template.md`, `references/escaped-audit-benchmarks.md`, and `references/benchmark-scoring.md`
 
 ## Workflow
 
@@ -552,6 +599,22 @@ The audit file stays uncommitted during the cycle. You commit it once at the end
 ---
 
 ## Step 1: Initialise
+
+### 1a0. Run audit preflight when useful
+
+For medium/high-risk audits, long-running audit loops, pasted external findings, or when repo context may be fragmented, start by running the bundled preflight script from the repository root. Resolve `scripts/audit-preflight.sh` relative to this skill directory.
+
+```bash
+~/.codex/skills/repo-audit/scripts/audit-preflight.sh
+```
+
+Optionally pass the base ref:
+
+```bash
+~/.codex/skills/repo-audit/scripts/audit-preflight.sh origin/main
+```
+
+Use the output to seed the audit file's branch, PR, repo-shape, hotspot, existing audit/review, and verification context. The script is a context collector, not a substitute for reading code.
 
 ### 1a. Set up `.audits/` directory
 
@@ -992,6 +1055,7 @@ Not everything questionable is a bug. Flag these as design questions when needed
 #### Turn-end blocker questions
 
 - What is the most likely serious issue this audit could still be missing?
+- Which bug class from the taxonomy is most represented by this repo or audit scope, and what direct evidence proves it is controlled?
 - Which assumption matters most, and what would break if it is false?
 - Which high-risk path has the weakest direct evidence?
 - Which sibling surface or parallel implementation is most likely to still carry the same bug family?
@@ -1001,6 +1065,7 @@ Not everything questionable is a bug. Flag these as design questions when needed
 - What entity twin or subsystem twin was not checked deeply enough?
 - What non-primary caller or bypass path was least directly evidenced?
 - What changed test, removed guard, or untouched dependency did you trust, and why?
+- Which state variant was least directly checked: empty, legacy-invalid, scoped duplicate, transient owner, old client/job, fallback data, or partial failure?
 - If this shipped and caused a major incident tomorrow, what path would you investigate first?
 
 #### Must challenge one more
@@ -1032,6 +1097,8 @@ Format: `{prefix}{turn}-{sequence}` — for example `B1-01`, `S1-02`, `O2-01`.
 These IDs persist across turns. `B1-01` is always `B1-01`, even when resolved in Turn 3.
 
 ### Severity
+
+For ambiguous severity, hidden broken flows, data integrity issues, compatibility breaks, partial-success behavior, architecture seams, operational risks, or external findings that seem under-ranked, load `references/severity-calibration.md` before assigning severity.
 
 - **Critical** — must fix
 - **High** — should fix soon
@@ -1184,6 +1251,7 @@ Areas and files covered by this audit:
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {key files, systems, tests, and searches reviewed}
 **Finding triage:** {live | already fixed | accepted | stale | needs confirmation}
+**Bug classes / invariants checked:** {Taxonomy classes and concrete invariants or state variants checked this turn}
 **Repo totality:** {what was rechecked across the whole current repo beyond the latest diff}
 **Sibling closure:** {which lifecycle/layer/entity/consumer/caller siblings were checked}
 **Remediation impact surface:** {which adjacent callers, consumers, dependencies, workflows, contracts, and side-effect surfaces were revalidated because of the fix}
@@ -1279,6 +1347,7 @@ Areas and files covered by this audit:
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {key files, systems, tests, and searches reviewed}
 **Finding triage:** {externally supplied findings classified as live | already fixed | accepted | stale | needs confirmation}
+**Bug classes / invariants checked:** {Taxonomy classes and concrete invariants or state variants checked this turn}
 **Repo totality:** {what was checked across the current repo state}
 **Sibling closure:** {which sibling surfaces were checked}
 **Remediation impact surface:** {which adjacent callers, consumers, dependencies, workflows, contracts, and side-effect surfaces were checked}
@@ -1334,6 +1403,9 @@ Areas and files covered by this audit:
 - **Every finding keeps its original typed ID forever.**
 - **Every turn ends with recommendations.**
 - **Turn 2+ records finding triage, repo totality, sibling closure, and residual risk explicitly.**
+- **Every turn records bug classes and invariants checked.** Use the taxonomy when external findings, repeated misses, or Medium+ risks are in play.
+- **External findings get bug-class classification.** Use the import reference to explain what audit lens missed them, even when the finding is stale or intentional in the current tree.
+- **Escaped misses get a retrospective.** Use the retrospective template for any GitHub/Devin/CI/security/user finding that arrived after a prior audit pass should reasonably have caught it.
 - **Turn 2+ proves repo totality concretely.** Generic claims like "rechecked the repo" are not enough; the turn must name non-delta rechecks, prior finding rechecks, adjacent/resolved area revalidation, and hotspot revisits.
 - **Solutioning must stay family-aware.** If multiple related surfaces are being fixed or revalidated, the audit should say whether the remediation pattern is shared, intentionally different, or still unresolved.
 - **Every turn states remediation impact explicitly.** Family closure is not enough; the audit should say which adjacent callers, consumers, dependencies, workflows, contracts, or side effects were revalidated because of the fix.
@@ -1352,7 +1424,7 @@ When the user asks for a follow-up audit after making fixes:
 2. **Get both the current-turn delta and the current repo state**. The delta shows what changed this pass; the repo state is the actual audit target.
 3. **Update the cumulative scope and hotspot ledger** — add any new files or recurring risk families.
 4. **Choose the turn’s change archetype tags** based on the current-turn delta plus current repo state.
-5. **Triage prior findings and any externally supplied audit comments against the current tree** — classify each as live, already fixed, accepted, stale, needs confirmation, or superseded before planning remediation work.
+5. **Triage prior findings and any externally supplied audit comments against the current tree** — classify each as live, already fixed, accepted, stale, needs confirmation, or superseded before planning remediation work. For multiple external findings, load `references/external-finding-import.md`. For external findings or missed prior audit issues, load `references/bug-class-taxonomy.md`, assign bug classes, and use `references/miss-retrospective-template.md` when the miss exposes an audit-process gap.
 6. **Re-read codebase context** for all files in the current delta, all files referenced by prior open findings, prior resolved findings with similar bug families, required sibling surfaces from the bug-family matrix, any shared abstractions or family members implicated by the remediation options, and the adjacent callers/consumers/dependencies in the remediation impact surface.
 7. **For each prior open finding, check the current code:**
    - **Resolved**
@@ -1366,8 +1438,8 @@ When the user asks for a follow-up audit after making fixes:
 11. **Audit both the latest changes and the repo-total current state for new findings** — fixes can introduce new bugs, untouched areas can still block a healthy conclusion, and a locally sensible remediation can still be wrong if it conflicts with the broader bug family.
 12. **If remediation or revalidation reveals a new adjacent issue, document it immediately as a new finding** — assign a new ID, record the discovery source (for example `remediation pass for B1-01`), link it to the triggering finding, and update the resolved finding note if relevant so the audit history stays traceable.
 13. **On long-running audits, trigger a branch-risk recertification turn when appropriate** — every 5 turns or after a major fix cluster.
-14. **Append the new turn** and update header counts, summaries, and hotspots. Record concrete repo-totality proof, remediation radius decisions, any deferred adjacent improvements, remediation-discovered findings, and the prevention artifact used or consciously skipped.
-15. **If all findings are resolved and no new issues remain in scope:** only then write a turn confirming the audited scope is clean.
+14. **Append the new turn** and update header counts, summaries, and hotspots. Record concrete repo-totality proof, invariant/variant proof for risky areas, bug-class classification for external or escaped findings, remediation radius decisions, any deferred adjacent improvements, remediation-discovered findings, and the prevention artifact used or consciously skipped.
+15. **If all findings are resolved and no new issues remain in scope:** check `references/all-clear-antipatterns.md`, then write a turn confirming the audited scope is clean only if the anti-pattern check does not expose weak proof.
 16. **If investigation is incomplete or repo-totality proof is thin/generic:** do not give a clean conclusion. State that the audit is partial and say what still needs checking, including unreviewed areas, impact paths, adjacent dependency surfaces, prevention gaps, or remediation-family coherence questions.
 
 ---
@@ -1376,16 +1448,23 @@ When the user asks for a follow-up audit after making fixes:
 
 If the team later reports that the audit missed a bug, treat that as a process failure to learn from, not just a new isolated finding.
 
+Load `references/bug-class-taxonomy.md` and `references/miss-retrospective-template.md` before writing the follow-up audit turn. If the miss resembles an existing calibration case, also load `references/escaped-audit-benchmarks.md`.
+
 1. Reconstruct the escaped issue precisely.
-2. Identify the missed signal:
+2. Classify it by bug class:
+   - use an existing taxonomy class when possible
+   - if no class fits, record a candidate class in the audit file rather than adding a narrow library-specific checklist
+3. Identify the missed signal:
    - evidence in the code but overlooked?
    - connected code not traced far enough?
    - wrong test/check run?
    - passing tests created false confidence?
    - repeated pattern elsewhere?
-3. Add or recommend a regression check that would catch this class next time.
-4. Search the codebase for sibling occurrences of the same pattern.
-5. Update the active audit with the escaped finding and explicitly note the audit gap.
+   - was the missing proof an invariant, a state variant, a lifecycle assumption, a scope boundary, an authority boundary, or an operational ownership gap?
+4. Add or recommend a regression check that would catch this class next time.
+5. Search the codebase for sibling occurrences of the same pattern.
+6. Update the active audit with the escaped finding and explicitly note the audit gap.
+7. If the miss is broadly reusable, add it to `references/escaped-audit-benchmarks.md` as a calibration case.
 
 ## Aging rule for resolved findings
 
@@ -1402,6 +1481,8 @@ Recheck an old resolved finding when:
 
 Use historical context to sharpen later turns, not to replace current-tree evidence.
 
+- Maintain compact benchmark prompts and expected audit lenses in `references/escaped-audit-benchmarks.md`.
+- Score benchmark attempts with `references/benchmark-scoring.md` so skill changes are evaluated by missed issue classes, false clean conclusions, and proof quality.
 - Compare the current turn against the audit history to identify drift, churn, partial reversions, and recurring bug families.
 - If a subsystem has changed materially across multiple turns, bias the re-audit toward proving the whole subsystem is coherent now, not just that the latest patch is locally sensible.
 - Use prior turns to inform hotspot selection, revalidation targets, and confidence penalties.

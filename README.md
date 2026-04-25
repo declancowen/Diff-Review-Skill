@@ -14,7 +14,7 @@ This repository contains three skills as sibling directories:
 
 `repo-audit`
 - Runs full repository audits across correctness, security, architecture, performance, and maintainability.
-- Includes stack-specific audit references plus the skill agent config.
+- Includes the skill definition, agent config, audit references, and helper scripts.
 
 `architecture-standards`
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
@@ -45,6 +45,7 @@ This repository contains three skills as sibling directories:
 │   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
-│   └── references/
+│   ├── references/
+│   └── scripts/
 └── README.md
 ```
