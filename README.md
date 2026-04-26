@@ -10,15 +10,15 @@ This repository contains three skills as sibling directories:
 
 `diff-review`
 - Reviews local git diffs for bugs, security issues, and code quality before pushing.
-- Includes the skill definition, agent config, review references, and helper scripts.
+- Includes the skill definition, agent config, stack references, review process references, and `scripts/review-preflight.sh`.
 
 `repo-audit`
 - Runs full repository audits across correctness, security, architecture, performance, and maintainability.
-- Includes the skill definition, agent config, audit references, and helper scripts.
+- Includes the skill definition, agent config, stack references, audit process references, and `scripts/audit-preflight.sh`.
 
 `architecture-standards`
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
-- Includes the skill definition, agent config, architecture references, and helper scripts.
+- Includes the skill definition, agent config, architecture reference packs, and `scripts/architecture-preflight.sh`.
 
 ## How They Work Together
 
@@ -36,18 +36,30 @@ This repository contains three skills as sibling directories:
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── references/
+│   │   ├── architecture-shapes.md
+│   │   ├── layer-standards.md
+│   │   └── ...
 │   └── scripts/
+│       └── architecture-preflight.sh
 ├── diff-review/
 │   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── references/
+│   │   ├── nextjs.md
+│   │   ├── review-workflow.md
+│   │   └── ...
 │   └── scripts/
+│       └── review-preflight.sh
 ├── repo-audit/
 │   ├── README.md
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   ├── references/
+│   │   ├── nextjs.md
+│   │   ├── audit-workflow.md
+│   │   └── ...
 │   └── scripts/
+│       └── audit-preflight.sh
 └── README.md
 ```
