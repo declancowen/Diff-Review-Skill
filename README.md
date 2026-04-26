@@ -18,7 +18,7 @@ This repository contains three skills as sibling directories:
 
 `architecture-standards`
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
-- Includes the skill definition and agent config.
+- Includes the skill definition, agent config, architecture references, and helper scripts.
 
 ## How They Work Together
 
@@ -34,7 +34,9 @@ This repository contains three skills as sibling directories:
 ├── architecture-standards/
 │   ├── README.md
 │   ├── SKILL.md
-│   └── agents/openai.yaml
+│   ├── agents/openai.yaml
+│   ├── references/
+│   └── scripts/
 ├── diff-review/
 │   ├── README.md
 │   ├── SKILL.md

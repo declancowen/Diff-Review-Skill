@@ -10,3 +10,5 @@ This skill complements `diff-review` and `repo-audit` by improving design reason
 
 - `SKILL.md` contains the full skill instructions and usage guidance.
 - `agents/openai.yaml` defines the agent configuration for the skill.
+- `references/` contains architecture standards, review checklists, scorecards, and implementation guidance used during design and review work.
+- `scripts/architecture-preflight.sh` collects architecture context before deeper design or review work.
