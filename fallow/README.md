@@ -2,7 +2,7 @@
 
 Guides Fallow adoption, configuration, reruns, remediation, and interpretation for TypeScript/JavaScript codebase intelligence.
 
-Use this skill when you want to run or configure Fallow for dead code, duplication, health and complexity, runtime coverage, CI audit gates, baselines, or architecture boundary analysis.
+Use this skill when you want to run or configure the free version of Fallow for dead code, duplication, health and complexity, CI audit gates, baselines, or architecture boundary analysis. It does not use trial, paid, licensed, hosted, pro, or runtime-coverage features.
 
 Works well with `repo-audit` for durable assessment records and with `architecture-standards` when findings or config decisions affect ownership, public APIs, shared packages, duplication abstractions, or module boundaries.
 

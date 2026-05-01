@@ -3,19 +3,22 @@ name: fallow
 description: >-
   Use when adopting, configuring, running, rerunning, or interpreting Fallow
   for TypeScript/JavaScript codebase intelligence: dead code, duplication,
-  health/complexity, fix previews, runtime coverage, architecture boundaries,
-  CI audit gates, baselines, or Fallow-backed repo audits. Trigger when the
+  health/complexity, fix previews, architecture boundaries, CI audit gates,
+  baselines, or Fallow-backed repo audits. Trigger when the
   user mentions Fallow, `npx fallow`, `fallow init`, `fallow audit`, unused
   exports/dependencies/files, duplication analysis, code health hotspots,
-  runtime coverage, or wants a repeatable Fallow assessment workflow.
+  or wants a repeatable Fallow assessment workflow.
 ---
 
 # Fallow
 
 Use Fallow as a static-analysis signal source, then apply repo-aware judgement before changing code or policy. Fallow finds candidates; Codex decides whether to fix code, model an intentional exception in config, add a narrow suppression, or defer with a documented reason.
 
+This skill must use only the free Fallow CLI and free Fallow features. Do not activate, configure, require, or rely on trial, paid, licensed, hosted, or pro Fallow features.
+
 ## Operating Rules
 
+- Free version only. If a command requires a Fallow license or trial activation, stop, report that it is outside this skill's allowed scope, and continue with free static-analysis signals where possible.
 - Prefer full-repo adoption commands before PR-gate commands. `fallow audit` / `npx fallow --ci` is for changed-file enforcement after the repo policy exists.
 - Always run destructive or auto-fix operations as preview first: `npx fallow fix --dry-run --format json`.
 - Do not blindly accept generated config or broad suppressions. Review entries, ignores, public packages, thresholds, and baselines against the repository shape.
@@ -33,6 +36,7 @@ Use Fallow as a static-analysis signal source, then apply repo-aware judgement b
    - Check whether `repo-audit` and `architecture-standards` skills are available in the current environment before relying on them.
    - Classify the run as first adoption, configured-without-history, rerun-with-history, CI/audit-only, or remediation pass. If signals conflict, explain the inferred state and proceed conservatively.
    - If the user is only asking to build or discuss the workflow, do not install or run Fallow.
+   - Do not run `fallow license activate`, trial setup, hosted setup, or paid feature setup under this skill.
    - If Fallow must run and is locally installed, prefer the repo's package script, `pnpm exec fallow`, or the package manager equivalent. Use `npx --yes fallow ...` only when Fallow is not already available and normal tool/network approval allows it.
 
 2. **Baseline Signal Set**
@@ -64,7 +68,7 @@ Use Fallow as a static-analysis signal source, then apply repo-aware judgement b
    - Rerun focused Fallow commands after each meaningful batch, then rerun the baseline signal set before calling the remediation complete.
 
 6. **Optional Branches**
-   - Runtime intelligence: only when coverage exists or the user wants production execution evidence. Use the runtime workflow in `references/fallow-workflows.md`.
+   - Licensed runtime intelligence and runtime-coverage setup are out of scope. Do not activate a trial or use licensed coverage features.
    - CI/PR gate: only after the repo has a policy and the team has chosen warn, baseline, or blocking rollout.
    - Baselines: use for existing debt when CI needs to block only new issues; store committed baselines outside `.fallow/`.
    - Boundaries: use when the repo has clear architecture zones or import direction rules worth enforcing.
@@ -72,10 +76,10 @@ Use Fallow as a static-analysis signal source, then apply repo-aware judgement b
 
 7. **Documentation**
    - For a real assessment, write or update `.audits/fallow.md` using `repo-audit` conventions when available; otherwise use the report shape in `references/fallow-workflows.md`. If the file was deleted or missing, recreate it from current evidence and note history is unavailable.
-   - Record run-state evidence, command set, Fallow version when available, config state, exceptions and reasons, highest-risk findings, remediation order, verification, and residual risk.
+   - Record run-state evidence, free-version constraint, command set, Fallow version when available, config state, exceptions and reasons, highest-risk findings, remediation order, verification, and residual risk.
    - Preserve enough state for later comparison: config summary, category counts, top findings, and optional raw JSON locations when useful.
    - On reruns, prepend a new turn and compare against previous Fallow state when available: new, resolved, accepted, still-open, stale suppression, and policy-drift findings.
 
 ## References
 
-- Load `references/fallow-workflows.md` when you need concrete command recipes, config mechanisms, rerun behavior, optional runtime/CI setup, or report structure.
+- Load `references/fallow-workflows.md` when you need concrete command recipes, config mechanisms, rerun behavior, optional CI setup, or report structure.

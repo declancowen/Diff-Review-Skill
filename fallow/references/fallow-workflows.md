@@ -36,7 +36,6 @@ Health:
 
 ```bash
 npx fallow health --format json
-npx fallow health --runtime-coverage ./coverage --format json
 ```
 
 Auto-fix:
@@ -176,19 +175,19 @@ When fixing Fallow findings, use a governed remediation loop:
 
 Do not apply `fallow fix --yes` as a blind cleanup. Use `fix --dry-run` first, review the proposed removals/edits against architecture and public API intent, then apply only the safe subset or ask for confirmation when scope is ambiguous.
 
-## Optional Runtime Intelligence
+## Licensed Runtime Intelligence Is Out Of Scope
 
-Use runtime intelligence only when the user wants execution evidence or the repo can produce coverage that represents real usage. Do not activate a trial or configure coverage as a default adoption step.
+This skill is free-version-only. Do not run `fallow license activate`, do not start a trial, and do not configure licensed runtime intelligence or runtime-coverage setup.
 
-Commands:
+If a user asks for licensed Fallow behavior, state that it is outside this skill's allowed scope and continue with free static-analysis commands where possible:
 
 ```bash
-npx fallow license activate --trial --email you@company.com
-npx fallow coverage setup
-npx fallow health --runtime-coverage ./coverage --format json
+npx fallow --format json
+npx fallow dead-code --format json
+npx fallow dupes --format json
+npx fallow health --format json
+npx fallow fix --dry-run --format json
 ```
-
-Before setup, identify the coverage source, whether it is test-only or production-like, and which packages/apps it represents. In reports, distinguish static dead-code candidates from code that is unexecuted in the provided runtime evidence.
 
 ## CI and Baselines
 
@@ -231,7 +230,7 @@ When documenting a Fallow assessment in `.audits/fallow.md`, include:
 - inferred run state and the evidence for it
 - Fallow version when available
 - config state: none, generated, modified, existing, or needs review
-- optional branches considered: runtime, CI, baselines, boundaries, MCP/agent setup
+- optional branches considered: CI, baselines, boundaries, MCP/agent setup, and skipped licensed/runtime features
 - category counts for dead code, duplication, health, audit, and fix preview
 - top findings by risk, not just count
 - high-confidence cleanup items
