@@ -1,0 +1,13 @@
+# Fallow
+
+Guides Fallow adoption, configuration, reruns, remediation, and interpretation for TypeScript/JavaScript codebase intelligence.
+
+Use this skill when you want to run or configure Fallow for dead code, duplication, health and complexity, runtime coverage, CI audit gates, baselines, or architecture boundary analysis.
+
+Works well with `repo-audit` for durable assessment records and with `architecture-standards` when findings or config decisions affect ownership, public APIs, shared packages, duplication abstractions, or module boundaries.
+
+## Folder Contents
+
+- `SKILL.md` contains the full skill instructions and trigger rules.
+- `agents/openai.yaml` defines the agent configuration for the skill.
+- `references/fallow-workflows.md` contains command recipes, config policy guidance, run-state detection, rerun behavior, and documentation patterns.

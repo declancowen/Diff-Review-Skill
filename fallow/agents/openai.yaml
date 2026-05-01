@@ -1,0 +1,4 @@
+interface:
+  display_name: "Fallow"
+  short_description: "Run Fallow adoption, config, and audit workflows"
+  default_prompt: "Use Fallow to assess this TypeScript/JavaScript repository."

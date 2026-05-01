@@ -1,10 +1,11 @@
 # Review And Architecture Skills
 
-This repository contains three skills as sibling directories:
+This repository contains four skills as sibling directories:
 
 - `diff-review`
 - `repo-audit`
 - `architecture-standards`
+- `fallow`
 
 ## Contents
 
@@ -20,12 +21,18 @@ This repository contains three skills as sibling directories:
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
 - Includes the skill definition, agent config, architecture reference packs, and `scripts/architecture-preflight.sh`.
 
+`fallow`
+- Guides Fallow adoption, configuration, reruns, remediation, and interpretation for TypeScript/JavaScript codebase intelligence.
+- Includes the skill definition, agent config, and Fallow workflow reference pack.
+
 ## How They Work Together
 
 - `diff-review` and `repo-audit` are the investigation skills. They focus on finding bugs, risks, regressions, and weak design decisions in real code.
 - `architecture-standards` is the design and boundary guide. It helps shape remediation, evaluate architectural quality, and keep fixes proportionate to the actual problem.
+- `fallow` is the static-analysis signal source for TypeScript/JavaScript repos. It helps surface dead code, duplication, health hotspots, runtime coverage signals, audit gates, and baseline policy.
 - If `architecture-standards` is installed alongside the review skills, it can be used to strengthen investigation quality, architectural reasoning, and fix recommendations.
-- `diff-review` and `repo-audit` still work independently if `architecture-standards` is not installed.
+- If `fallow` is installed alongside `repo-audit`, Fallow output can be recorded as audit evidence instead of being presented as raw tool output alone.
+- The skills still work independently if companion skills are not installed.
 
 ## Layout
 
@@ -51,6 +58,12 @@ This repository contains three skills as sibling directories:
 │   │   └── ...
 │   └── scripts/
 │       └── review-preflight.sh
+├── fallow/
+│   ├── README.md
+│   ├── SKILL.md
+│   ├── agents/openai.yaml
+│   └── references/
+│       └── fallow-workflows.md
 ├── repo-audit/
 │   ├── README.md
 │   ├── SKILL.md
