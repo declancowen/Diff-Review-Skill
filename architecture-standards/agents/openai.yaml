@@ -1,7 +1,7 @@
 interface:
   display_name: "Architecture Standards"
-  short_description: "Code-oriented architecture and boundary guidance"
-  default_prompt: "Use $architecture-standards to design or build code with clear ownership, enforceable boundaries, proportional architecture, and practical tradeoffs."
+  short_description: "Design target state and diagnose architecture debt"
+  default_prompt: "Use $architecture-standards to diagnose current-state architecture, design an enforceable target state, and guide code with clear ownership and boundaries."
 
 policy:
   allow_implicit_invocation: true

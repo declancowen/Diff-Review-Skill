@@ -29,6 +29,8 @@ cargo test
 bundle exec rspec
 ```
 
+For frontend or presentation-heavy diffs, add browser or visual smoke for representative changed screens when layout, navigation, empty states, dialogs, menus, shared primitives, or rich interactive surfaces moved. Unit tests and build output do not prove the rendered experience still works.
+
 ## Test Adequacy
 
 Ask:

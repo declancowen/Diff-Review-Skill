@@ -38,6 +38,13 @@ Use this when the user supplies findings from GitHub, Devin, CI, security tools,
    - one live Authority bug means inspect other generated fields, scripts, imports, jobs, and direct callers
    - one live Compatibility bug means inspect create vs update schemas, migrations, and old stored data
    - one live Affordance/Entrypoint Parity bug means compare UI, API, job, script, webhook, and direct mutation paths
+   - one live contract-key bug means inspect sibling builders, routes, form handlers, query parameters, cookies, storage keys, webhook payloads, and failure/redirect branches that serialize the same public contract
+
+6. **Capture process learning.**
+   - if an external finding escaped a previous clean audit/review, record the missed lens and the prevention artifact in the audit turn
+   - if the miss came from analyzer-driven refactoring, check for test-only production exports, stale coverage evidence, and mode-collapsed "clean" claims
+   - if the source is automated PR analysis, wait for in-progress reviews rather than triggering duplicates; use resolved/outdated thread state only after current-tree proof
+   - for large PRs, compare feedback to the latest commit/SHA and local branch diff; hosted diff truncation or delayed comments are context, not proof that the finding is stale
 
 ## Do Not
 
@@ -45,3 +52,4 @@ Use this when the user supplies findings from GitHub, Devin, CI, security tools,
 - Do not call a finding stale because the code moved; prove the behavior is gone.
 - Do not mix intentional product/architecture changes with bugs. Mark them accepted only with evidence.
 - Do not fix only the pasted line when the bug class implies a sibling or bypass path.
+- Do not close the learning loop at "fixed"; update the audit/review prevention record when the miss reveals a reusable review or architecture gap.

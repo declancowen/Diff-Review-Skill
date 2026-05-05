@@ -12,6 +12,7 @@ Use this for ordinary diff-review and re-review turns.
    - explicit PR/review-request diff second
    - branch vs base fallback third
 5. Exclude `.reviews/` from code diffs.
+6. If a hosted PR diff is too large, truncated, delayed, or incomplete, do not rely on it for coverage. Review local branch-vs-base diff as the source of truth, then use GitHub only for review comments, thread state, checks, and latest commit/SHA evidence.
 
 Useful commands:
 
@@ -21,6 +22,7 @@ git diff -- . ':!.reviews/'
 git diff --staged -- . ':!.reviews/'
 git diff main...HEAD -- . ':!.reviews/'
 git diff --name-only main...HEAD -- . ':!.reviews/'
+git diff --stat main...HEAD -- . ':!.reviews/'
 ```
 
 ## Turn 1
@@ -45,7 +47,8 @@ git diff --name-only main...HEAD -- . ':!.reviews/'
 6. Apply the resolution gate before marking anything resolved.
 7. Re-run verification that proves the fix and any non-primary sibling path where relevant.
 8. Analyse the full current branch state for new findings, not only the latest patch.
-9. Append the newest turn at the top of the review body and update header counts.
+9. For large branches, refresh the owner/batch ledger and note any hosted PR diff limits, automated-review status, and unresolved thread state.
+10. Append the newest turn at the top of the review body and update header counts.
 
 ## Code Context Standard
 

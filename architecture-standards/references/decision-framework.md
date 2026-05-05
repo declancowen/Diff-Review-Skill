@@ -8,6 +8,7 @@ Use this when choosing architecture shape or explaining a meaningful implementat
 - Prefer the simplest design that keeps a clean upgrade path.
 - Separate policy from mechanism: business rules belong inward; frameworks, vendors, protocols, storage, and UI belong at edges.
 - Respect coherent existing architecture. Improve incrementally unless it is actively causing harm.
+- For existing systems, derive target-state decisions from current-state evidence: code shape, duplication, hotspots, bypasses, module budgets, analyzer policy, audit findings, and operational failure modes.
 - Optimize for evolvability: clear ownership, safe change, testability, and operability under expected growth.
 
 ## Frame The Problem
@@ -17,6 +18,7 @@ Before designing, identify:
 - business capability being implemented
 - actors, systems, and teams that depend on it
 - greenfield vs extension vs refactor
+- current-state architecture gap if this is an existing system
 - critical user journeys and failure consequences
 - throughput, latency, concurrency, data volume, and growth expectations
 - data sensitivity, compliance, auditability, and tenancy model
@@ -50,10 +52,12 @@ Even in small work, keep boundary clarity, data correctness, and testability int
 For material decisions, make these clear through code or final answer:
 
 - **Decision:** what shape was chosen
+- **Current-state gap:** what structural failure or risk this decision addresses
 - **Owner:** which module/layer owns the invariant
 - **Reason:** requirement, risk, or constraint driving it
 - **Tradeoff:** simpler option rejected and why
 - **Enforcement:** tests, types, schemas, guards, boundaries, or tooling
+- **Fitness signal:** what would prove the target state is holding in code
 - **Revisit trigger:** assumption that would change the design
 
 Avoid vague "best practice" claims. Name the concrete boundary or risk.

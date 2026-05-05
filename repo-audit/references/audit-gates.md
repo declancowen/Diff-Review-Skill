@@ -13,6 +13,22 @@ Do not say "healthy" or "clean in audited scope" unless:
 - no open Critical or High findings remain in scope
 - residual uncertainty is minor enough to call the scope healthy defensibly
 
+For Fallow/static-analysis audits, also require:
+
+- analyzer evidence is quantified or explicitly out of scope
+- configured gates, changed-code gates, production inventories, full inventories, baselines, and suppressions are separated
+- CI analyzer behavior is compared with package scripts, including blocking versus `continue-on-error`
+- accepted analyzer debt has owner, reason, cap, evidence date, and revisit trigger
+- stale analyzer evidence is rerun or marked stale with `HEAD`, command, mode, and scope
+- coverage-aware health uses a refreshed coverage artifact when test changes are part of remediation evidence
+- production dead-code is rerun after coverage-oriented helper exports or broad testability extraction
+- broad refactors or boundary moves have full validation or an explicit low-risk rationale for narrower checks
+
+For broad remediation, large branches, or presentation-heavy audit scope, also require:
+
+- broad UI/presentation refactors have browser/visual smoke for representative changed screens, or a recorded reason this risk is low and not smokeable
+- large remediation branches have local branch-total evidence and an owner/capability batch ledger; hosted PR diff limits are recorded and compensated for
+
 For Medium+ risk, read `all-clear-antipatterns.md`.
 
 ## Risk Score
@@ -42,6 +58,7 @@ For shared UI, contract, persistence, optimistic-state, batch-operation, fallbac
 - lifecycle: can owner disappear before async/stream/job cleanup completes?
 - identity: are keys/lookups/cache IDs unique under duplicate render/scope/imports?
 - atomicity: what happens on partial batch/fan-out/job/migration failure?
+- contract encoding: do internal helper names, public query/form/body keys, cookies, storage keys, webhook payloads, and persisted shapes match every consumer?
 
 For Medium+ risk, record main invariants checked. For High/Critical risk, attack the weakest invariant directly.
 
@@ -89,11 +106,17 @@ Lower confidence when:
 - sibling closure is incomplete
 - only primary path was tested
 - only one layer was reviewed for contract/architecture bug
+- serialized contract keys were not asserted on validation, failure, retry, redirect, job, or non-happy branches
 - non-primary caller audit was skipped where bypasses likely exist
 - external findings were not current-tree triaged
 - repo-total reassessment was not done on Turn 2+
 - hotspot ledger was not checked
 - resolved adjacent findings were not revalidated after nearby change
+- Fallow exists but only lint/typecheck/tests were used as quality evidence
+- production-only analyzer cleanliness is described as full-repo cleanliness
+- duplication budget passing at baseline is treated as debt removal
+- hosted PR diff tooling is truncated/incomplete and no local branch-vs-base audit compensates
+- broad UI/presentation movement has no browser or visual smoke despite layout/navigation/empty-state risk
 
 ## Final Self-Audit
 

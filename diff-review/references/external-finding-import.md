@@ -38,6 +38,14 @@ Use this when the user pastes findings from GitHub, Devin, CI, another reviewer,
    - one live Authority bug means inspect other generated fields and direct callers
    - one live Compatibility bug means inspect create vs update schemas and old stored data
    - one live Affordance Parity bug means compare button, keyboard, menu, inline, and API paths
+   - one live contract-key bug means inspect sibling builders, routes, form handlers, query parameters, storage keys, webhook payloads, and failure/redirect branches that serialize the same public contract
+
+6. **Handle PR-review state deliberately.**
+   - if an automated reviewer has acknowledged a review request with an in-progress reaction/status, wait and poll instead of posting another trigger
+   - for large PRs, compare feedback to the latest commit/SHA and local branch diff; hosted diff truncation or delayed comments are context, not proof that the finding is stale
+   - after fixing an external PR finding, rerun local review/static checks, push the fix, and let the PR reviewer re-run automatically when configured
+   - resolve outdated review threads only when the current tree proves the behavior is fixed and the review file records the finding as resolved
+   - do not treat an outdated thread as clean evidence by itself
 
 ## Do Not
 
@@ -45,3 +53,4 @@ Use this when the user pastes findings from GitHub, Devin, CI, another reviewer,
 - Do not call a finding stale because the diff moved; prove the behavior is gone.
 - Do not mix intentional product changes with bugs. Mark them accepted only with evidence.
 - Do not fix only the pasted line when the bug class implies a sibling path.
+- Do not post duplicate `@codex review` or equivalent triggers while a review is already running or acknowledged.

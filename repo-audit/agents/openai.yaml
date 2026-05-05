@@ -1,4 +1,4 @@
 interface:
   display_name: "Repo Audit"
-  short_description: "Audit a full codebase, external findings, and escaped bug patterns"
-  default_prompt: "Use $repo-audit to assess this repository for bugs, tech debt, security, architecture, external findings, and escaped bug patterns."
+  short_description: "Audit repo health, risk, and architecture debt"
+  default_prompt: "Use $repo-audit to assess this repository for bugs, tech debt, security, architecture debt, analyzer evidence, external findings, and escaped bug patterns."

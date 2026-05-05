@@ -9,6 +9,7 @@ Use this for full-codebase audits and re-audits.
 3. Read every `.audits/*.md` file; they are the audit history and hotspot context.
 4. If `.reviews/*.md` exists, scan relevant files for escaped-finding and hotspot context.
 5. Determine audit scope. Default to full codebase unless the user asked for a focused scope.
+6. If auditing a large remediation branch or PR, use local repo state and branch-vs-base evidence as the source of truth. Hosted PR diff truncation, pagination, or delayed automated comments should be recorded and compensated for with an owner/capability batch ledger.
 
 Useful commands:
 
@@ -40,7 +41,8 @@ git rev-parse --short HEAD
 6. Apply resolution gate before marking anything resolved.
 7. Re-run verification that proves fixes and relevant non-primary/bypass paths.
 8. Audit the current repo state for new findings, not only latest patches.
-9. Append newest turn at the top of the audit body and update header counts.
+9. For large branches, refresh the owner/capability batch ledger, latest commit/SHA, CI/check status, and external review thread/comment state.
+10. Append newest turn at the top of the audit body and update header counts.
 
 ## Scope Guidance
 

@@ -64,6 +64,8 @@ Use this when creating or updating `.reviews/{content-area}.md`.
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {...}
 **Finding triage:** {...}
+**Static/analyzer evidence:** {changed gates, duplication/refactor signals, policy drift, baselines/suppressions, or not used}
+**Architecture impact:** {current-state failure mode improved/worsened/unchanged, or not applicable}
 **Bug classes / invariants checked:** {...}
 **Branch totality:** {...}
 **Sibling closure:** {...}
@@ -97,7 +99,8 @@ Use this when creating or updating `.reviews/{content-area}.md`.
 2. **Then address:** {...}
 3. **Patterns noticed:** {...}
 4. **Suggested approach:** {...}
-5. **Defer on purpose:** {...}
+5. **Architecture transition:** {...}
+6. **Defer on purpose:** {...}
 ```
 
 ## Key Requirements
@@ -107,4 +110,5 @@ Use this when creating or updating `.reviews/{content-area}.md`.
 - External findings get current-tree triage and bug-class classification.
 - Serious findings require sibling closure and remediation impact notes.
 - No findings still requires proof.
+- Refactor-heavy reviews must say whether the change improved ownership/current-state architecture, not only whether metrics or tests passed.
 - If anything important was not reviewed, mark partial and name what remains.

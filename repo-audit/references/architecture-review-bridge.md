@@ -1,6 +1,13 @@
 # Architecture Review Bridge
 
-Use this when an audit finding cannot be safely handled as a local code issue because it touches ownership, boundaries, shared contracts, or long-lived module shape. This does not replace the `architecture-standards` skill; it tells the auditor when to invoke it.
+Use this when an audit finding cannot be safely handled as a local code issue because it touches ownership, boundaries, shared contracts, target-state design, current-state diagnosis, or long-lived module shape. This does not replace the `architecture-standards` skill; it tells the auditor when to invoke it.
+
+For architecture audits, use architecture standards in both directions:
+
+- current-state diagnosis: what the code actually does and why the architecture is not functioning
+- target-state design: what the architecture should become, with owners, boundaries, contracts, enforcement, and transition slices
+
+Do not score a repo highly because a target state sounds plausible. Score it against current-state evidence and whether the target state has fitness functions that would prevent the observed failures from returning.
 
 ## Invoke Architecture Standards When
 
@@ -12,6 +19,8 @@ Use this when an audit finding cannot be safely handled as a local code issue be
 - **A compatibility decision is product/platform-level:** create and update constraints differ, old stored data needs migration, or old clients/workers need a grace path.
 - **State authority is split:** optimistic store, server handler, read model, fallback seed, and background job each claim ownership of the same field.
 - **Operational ownership is unclear:** retry, idempotency, rollback, monitoring, or incident recovery is not owned by a clear layer.
+- **Target state is underspecified:** the plan names broad layers or architecture style but not concrete owners, contracts, dependency rules, enforcement, or transition path.
+- **Structural reports contradict the target:** duplication, health, churn, or module budgets show the claimed architecture is not expressed in code.
 
 ## Architecture Review Questions
 
@@ -22,17 +31,22 @@ Use this when an audit finding cannot be safely handled as a local code issue be
 - Is intentional divergence documented at the boundary, or only implied by local code?
 - Does the read model/fallback/cache/job path preserve the same invariant as the write path?
 - Does the architecture provide a safe migration and rollback path for existing data?
+- What target-state rule would prevent this finding from recurring?
+- What current-state evidence proves the target rule is missing or weak?
 
 ## Output In Repo Audit
 
 When architecture guidance is needed, include:
 
 - **Boundary decision:** where the rule should live
+- **Current-state diagnosis:** why the existing architecture allowed the issue
+- **Target-state decision:** what owner/boundary/contract/enforcement should exist after remediation
 - **Local fix shape:** what changes now
 - **Shared fix shape:** helper/schema/adapter/contract if needed
 - **Operational shape:** retry, idempotency, rollback, monitoring, or migration if relevant
 - **Intentional divergence:** why any sibling path differs
 - **Deferred architecture debt:** what is not fixed now and why
+- **Transition path:** what sequence moves from current state to target state
 
 ## Do Not
 

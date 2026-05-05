@@ -7,41 +7,42 @@ Use the repo's package script, `pnpm exec fallow`, or the package-manager equiva
 Baseline adoption:
 
 ```bash
-npx fallow --format json
-npx fallow dead-code --format json
-npx fallow dupes --format json
-npx fallow health --format json
-npx fallow fix --dry-run --format json
+npx fallow --format json --quiet --explain
+npx fallow dead-code --format json --quiet --explain
+npx fallow dupes --format json --quiet --explain
+npx fallow health --format json --quiet --explain
+npx fallow fix --dry-run --yes --format json --quiet
 ```
 
 Focused dead-code passes:
 
 ```bash
-npx fallow dead-code --unresolved-imports --format json
-npx fallow dead-code --unlisted-deps --format json
-npx fallow dead-code --unused-files --format json
-npx fallow list --entry-points
-npx fallow dead-code --unused-deps --format json
-npx fallow dead-code --unused-exports --unused-types --format json
+npx fallow dead-code --unresolved-imports --format json --quiet --explain
+npx fallow dead-code --unlisted-deps --format json --quiet --explain
+npx fallow dead-code --unused-files --format json --quiet --explain
+npx fallow list --entry-points --boundaries --format json --quiet
+npx fallow dead-code --unused-deps --format json --quiet --explain
+npx fallow dead-code --unused-exports --unused-types --format json --quiet --explain
 ```
 
 Duplication:
 
 ```bash
-npx fallow dupes --format json
-npx fallow dupes --mode semantic --format json
+npx fallow dupes --format json --quiet --explain
+npx fallow dupes --mode semantic --format json --quiet --explain
 ```
 
 Health:
 
 ```bash
-npx fallow health --format json
+npx fallow health --format json --quiet --explain
+npx fallow health --hotspots --file-scores --format json --quiet --explain
 ```
 
 Auto-fix:
 
 ```bash
-npx fallow fix --dry-run --format json
+npx fallow fix --dry-run --yes --format json --quiet
 ```
 
 Only apply fixes after reviewing the preview and confirming scope:
@@ -121,7 +122,7 @@ Later rerun:
 2. If docs are missing but config or tool setup exists, treat the run as configured-without-history and rebuild the current-state record instead of reinitializing blindly.
 3. Run the baseline signal set again under the current policy.
 4. Classify findings as new regression, still-open accepted debt, resolved, stale exception, or policy drift.
-5. Revisit optional branches only if repo evidence changed: new packages, new public API surface, new dynamic loader, new coverage artifact, new CI need, or new architecture boundary.
+5. Revisit optional branches only if repo evidence changed: new packages, new public API surface, new dynamic loader, new CI need, or new architecture boundary.
 6. Compare counts and top findings against the previous recorded run when available. If raw JSON is too large, preserve summaries that are sufficient to explain deltas.
 7. Update `.audits/fallow.md` newest turn first.
 
@@ -157,10 +158,13 @@ Use `architecture-standards` when available and a decision affects durable syste
 - changing module placement, dependency direction, route/API ownership, data contracts, runtime entry points, jobs, scripts, or integration boundaries
 - widening health thresholds or excluding complex areas from health checks
 - deciding whether production-only analysis is appropriate
+- using duplication, health, or module-budget evidence to revise current-state diagnosis or target-state design
 
 Fallback if `architecture-standards` is unavailable: apply the same checks directly. Identify the owner, public boundary, dependency direction, bypass paths, enforcement mechanism, and verification before changing config or code.
 
 Architecture governance should result in a concrete decision: fix at the owning boundary, model an intentional exception, add enforcement, or defer with a reason. Avoid turning architecture standards into general cleanup commentary.
+
+If Fallow exposes widespread architecture debt after prior architecture-standard use, treat that as feedback on the standard itself: the previous target state may have lacked ownership, dependency direction, public surfaces, transition slices, or fitness functions. Re-open the architecture design instead of only shrinking warning counts.
 
 ## Implementation Governance
 
@@ -182,11 +186,11 @@ This skill is free-version-only. Do not run `fallow license activate`, do not st
 If a user asks for licensed Fallow behavior, state that it is outside this skill's allowed scope and continue with free static-analysis commands where possible:
 
 ```bash
-npx fallow --format json
-npx fallow dead-code --format json
-npx fallow dupes --format json
-npx fallow health --format json
-npx fallow fix --dry-run --format json
+npx fallow --format json --quiet --explain
+npx fallow dead-code --format json --quiet --explain
+npx fallow dupes --format json --quiet --explain
+npx fallow health --format json --quiet --explain
+npx fallow fix --dry-run --yes --format json --quiet
 ```
 
 ## CI and Baselines
@@ -221,6 +225,8 @@ Use `architecture-standards` when a Fallow finding touches:
 
 Implementation rule: fix at the owning boundary. Do not move code to `shared` solely because two files look similar; shared abstractions need a stable invariant and ownership.
 
+For broad duplication or health inventories, first name the design failure the inventory represents. Examples: "request authorization policy is scattered across routes," "presentation state orchestration lives inside large leaf components," "test fixtures bypass runtime construction," or "integration retries are copied without an owner." Then define the target-state rule and fitness signal before planning fix batches.
+
 ## Audit Report Shape
 
 When documenting a Fallow assessment in `.audits/fallow.md`, include:
@@ -235,6 +241,7 @@ When documenting a Fallow assessment in `.audits/fallow.md`, include:
 - top findings by risk, not just count
 - high-confidence cleanup items
 - architecture-sensitive items needing design judgement
+- current-state failure modes and target-state design gaps revealed by analyzer evidence
 - exceptions added or recommended, with reason and mechanism
 - rerun comparison: new, resolved, accepted, still-open, stale suppressions
 - verification commands and gaps

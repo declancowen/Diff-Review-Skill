@@ -1,6 +1,8 @@
 # Architecture Review Bridge
 
-Use this when a diff-review finding cannot be safely fixed as a local patch because it touches ownership, boundaries, shared contracts, or long-lived module shape. This does not replace the `architecture-standards` skill; it tells the reviewer when to invoke it.
+Use this when a diff-review finding cannot be safely fixed as a local patch because it touches ownership, boundaries, shared contracts, target-state design, current-state diagnosis, or long-lived module shape. This does not replace the `architecture-standards` skill; it tells the reviewer when to invoke it.
+
+For refactor-heavy or architecture-remediation diffs, review both the current-state problem and the target-state claim. A diff can look cleaner locally while still failing to move the repo toward an enforceable target architecture.
 
 ## Invoke Architecture Standards When
 
@@ -11,6 +13,7 @@ Use this when a diff-review finding cannot be safely fixed as a local patch beca
 - **Remediation changes dependency direction:** UI wants to import server/domain code, schema wants app state, or shared code wants framework-specific dependencies.
 - **A compatibility decision is product/platform-level:** create and update constraints differ, old stored data needs a migration, or old clients need a grace path.
 - **State authority is split:** optimistic store, server handler, read model, and fallback seed each claim ownership of the same field.
+- **Target state is underspecified:** the diff says it improves architecture but does not define owner, contract, dependency rule, enforcement, or transition effect.
 
 ## Architecture Review Questions
 
@@ -20,12 +23,16 @@ Use this when a diff-review finding cannot be safely fixed as a local patch beca
 - Can sibling surfaces share a helper without importing the wrong layer?
 - Is intentional divergence documented at the boundary, or only implied by local code?
 - Does the read model/fallback/cache path preserve the same invariant as the write path?
+- What target-state rule does this change establish or reinforce?
+- Does current-state evidence show the change actually reduces the structural failure?
 
 ## Output In Diff Review
 
 When architecture guidance is needed, include:
 
 - **Boundary decision:** where the rule should live
+- **Current-state problem:** what structural issue the diff addresses
+- **Target-state effect:** which owner/boundary/contract/enforcement is strengthened
 - **Local fix shape:** what changes now
 - **Shared fix shape:** helper/schema/adapter/contract if needed
 - **Intentional divergence:** why any sibling path differs

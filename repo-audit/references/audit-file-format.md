@@ -72,6 +72,8 @@ Use this when creating or updating `.audits/{scope}.md`.
 **Confidence:** {high | medium | low} — {why}
 **Coverage note:** {...}
 **Finding triage:** {...}
+**Static/analyzer evidence:** {gates, inventories, duplication/refactor themes, policy drift, baselines/suppressions, or not used}
+**Current-state architecture diagnosis:** {structural failure modes or not applicable}
 **Bug classes / invariants checked:** {...}
 **Repo totality:** {...}
 **Sibling closure:** {...}
@@ -80,7 +82,7 @@ Use this when creating or updating `.audits/{scope}.md`.
 
 ### Architecture overview
 
-{Turn 1 or repo-level audits only}
+{Turn 1 or repo-level audits only. Include actual current-state shape, intended target state, and transition gap when architecture is in scope.}
 
 ### Validation
 
@@ -110,7 +112,8 @@ Use this when creating or updating `.audits/{scope}.md`.
 3. **Patterns noticed:** {...}
 4. **Suggested approach:** {...}
 5. **Progress since last turn:** {...}
-6. **Defer on purpose:** {...}
+6. **Architecture transition:** {...}
+7. **Defer on purpose:** {...}
 ```
 
 ## Key Requirements
@@ -120,4 +123,6 @@ Use this when creating or updating `.audits/{scope}.md`.
 - External findings get current-tree triage and bug-class classification.
 - Serious findings require sibling closure and remediation impact notes.
 - Clean findings still require proof.
+- Architecture audits must distinguish target-state design from current-state fitness when structural evidence exists.
+- Analyzer-backed audits must separate blocking gates from advisory inventories and transition debt.
 - If anything important was not audited, mark partial and name what remains.

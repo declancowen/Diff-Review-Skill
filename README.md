@@ -11,19 +11,19 @@ This repository contains four skills as sibling directories:
 
 `diff-review`
 - Reviews local git diffs for bugs, security issues, and code quality before pushing.
-- Includes the skill definition, agent config, stack references, review process references, and `scripts/review-preflight.sh`.
+- Includes the skill definition, agent config, stack references, review process references, static-analysis guidance, and `scripts/review-preflight.sh`.
 
 `repo-audit`
 - Runs full repository audits across correctness, security, architecture, performance, and maintainability.
-- Includes the skill definition, agent config, stack references, audit process references, and `scripts/audit-preflight.sh`.
+- Includes the skill definition, agent config, stack references, audit process references, static-analysis guidance, and `scripts/audit-preflight.sh`.
 
 `architecture-standards`
 - Provides architecture guidance for design, refactoring, scaffolding, and architectural code review.
-- Includes the skill definition, agent config, architecture reference packs, and `scripts/architecture-preflight.sh`.
+- Includes the skill definition, agent config, architecture reference packs for current-state diagnosis, target-state design, refactor design, static-analyzer policy, and `scripts/architecture-preflight.sh`.
 
 `fallow`
 - Guides free-version Fallow adoption, configuration, reruns, remediation, and interpretation for TypeScript/JavaScript codebase intelligence.
-- Includes the skill definition, agent config, and Fallow workflow reference pack.
+- Includes the skill definition, agent config, and Fallow workflow, analysis primitive, package internals, and quality benchmark references.
 
 ## How They Work Together
 
@@ -44,7 +44,9 @@ This repository contains four skills as sibling directories:
 │   ├── agents/openai.yaml
 │   ├── references/
 │   │   ├── architecture-shapes.md
+│   │   ├── current-state-diagnosis.md
 │   │   ├── layer-standards.md
+│   │   ├── target-state-design.md
 │   │   └── ...
 │   └── scripts/
 │       └── architecture-preflight.sh
@@ -55,6 +57,7 @@ This repository contains four skills as sibling directories:
 │   ├── references/
 │   │   ├── nextjs.md
 │   │   ├── review-workflow.md
+│   │   ├── static-analysis.md
 │   │   └── ...
 │   └── scripts/
 │       └── review-preflight.sh
@@ -63,7 +66,9 @@ This repository contains four skills as sibling directories:
 │   ├── SKILL.md
 │   ├── agents/openai.yaml
 │   └── references/
-│       └── fallow-workflows.md
+│       ├── analysis-primitives.md
+│       ├── fallow-workflows.md
+│       └── ...
 ├── repo-audit/
 │   ├── README.md
 │   ├── SKILL.md
@@ -71,6 +76,7 @@ This repository contains four skills as sibling directories:
 │   ├── references/
 │   │   ├── nextjs.md
 │   │   ├── audit-workflow.md
+│   │   ├── static-analysis.md
 │   │   └── ...
 │   └── scripts/
 │       └── audit-preflight.sh

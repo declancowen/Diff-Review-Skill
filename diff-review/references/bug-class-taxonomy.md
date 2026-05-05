@@ -185,6 +185,25 @@ Review proof:
 - compare guards, payloads, disabled states, permission checks, and confirmations
 - test at least one non-primary affordance for important actions
 
+### Contract Encoding
+
+Internal names, helper options, or implementation shapes leak into a public route/API/form/storage contract.
+
+Typical signals:
+
+- helper accepts `nextPath` but serialized query must be `next`
+- route failure branches emit different keys than the page/form reads
+- API adapter maps product fields on the happy path but not validation/retry/error paths
+- webhook, storage, env, cookie, or persisted keys are renamed in one layer but not consumers
+- tests assert helper return objects but not the actual URL, request body, cookie, or stored payload
+
+Review proof:
+
+- name the public serialized contract and the internal implementation shape separately
+- inspect validation, failure, retry, redirect, and success branches
+- check sibling builders/routes/forms/adapters that serialize the same contract
+- add route/API/storage-level tests that assert the serialized key/value shape
+
 ### Semantic Regression
 
 The code still runs, but product meaning changes unintentionally.

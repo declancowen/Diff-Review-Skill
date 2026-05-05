@@ -29,6 +29,8 @@ cargo test
 bundle exec rspec
 ```
 
+For frontend or presentation-heavy audit scope, add browser or visual smoke for representative changed screens when layout, navigation, empty states, dialogs, menus, shared primitives, or rich interactive surfaces moved. Unit tests and build output do not prove the rendered experience still works.
+
 ## Test Adequacy
 
 Ask:
@@ -51,7 +53,7 @@ For repo-level audits, consider:
 - migration/backfill dry-runs where possible
 - dependency/security audit if relevant
 - CI workflow inspection
-- smoke/e2e only for critical journeys, not as a replacement for focused tests
+- smoke/e2e for critical journeys and representative presentation-heavy changes, not as a replacement for focused tests
 
 ## Changed Tests
 
